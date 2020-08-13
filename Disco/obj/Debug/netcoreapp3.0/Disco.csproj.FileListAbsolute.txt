@@ -1,0 +1,44 @@
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\obj\Debug\netcoreapp3.0\Disco.csprojAssemblyReference.cache
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\obj\Debug\netcoreapp3.0\Disco.csproj.CoreCompileInputs.cache
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfoInputs.cache
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfo.cs
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\bin\Debug\netcoreapp3.0\Disco.deps.json
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\bin\Debug\netcoreapp3.0\Disco.dll
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\bin\Debug\netcoreapp3.0\Disco.pdb
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\obj\Debug\netcoreapp3.0\Disco.dll
+C:\Users\Alex\Documents\MEGAsync Downloads\Disco\obj\Debug\netcoreapp3.0\Disco.pdb
+C:\Users\Alex\Documents\Projects\Disco\bin\Debug\netcoreapp3.0\Disco.deps.json
+C:\Users\Alex\Documents\Projects\Disco\bin\Debug\netcoreapp3.0\Disco.dll
+C:\Users\Alex\Documents\Projects\Disco\bin\Debug\netcoreapp3.0\Disco.pdb
+C:\Users\Alex\Documents\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.csprojAssemblyReference.cache
+C:\Users\Alex\Documents\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfoInputs.cache
+C:\Users\Alex\Documents\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfo.cs
+C:\Users\Alex\Documents\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.dll
+C:\Users\Alex\Documents\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.pdb
+D:\Projects\Disco\bin\Debug\netcoreapp3.0\Disco.deps.json
+D:\Projects\Disco\bin\Debug\netcoreapp3.0\Disco.dll
+D:\Projects\Disco\bin\Debug\netcoreapp3.0\Disco.pdb
+D:\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.csprojAssemblyReference.cache
+D:\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfoInputs.cache
+D:\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfo.cs
+D:\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.csproj.CoreCompileInputs.cache
+D:\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.dll
+D:\Projects\Disco\obj\Debug\netcoreapp3.0\Disco.pdb
+D:\Projects\SimpBot\Disco\bin\Debug\netcoreapp3.0\Disco.deps.json
+D:\Projects\SimpBot\Disco\bin\Debug\netcoreapp3.0\Disco.dll
+D:\Projects\SimpBot\Disco\bin\Debug\netcoreapp3.0\Disco.pdb
+D:\Projects\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.csprojAssemblyReference.cache
+D:\Projects\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfoInputs.cache
+D:\Projects\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfo.cs
+D:\Projects\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.csproj.CoreCompileInputs.cache
+D:\Projects\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.dll
+D:\Projects\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.pdb
+D:\Projects\ML\SimpBot\Disco\bin\Debug\netcoreapp3.0\Disco.deps.json
+D:\Projects\ML\SimpBot\Disco\bin\Debug\netcoreapp3.0\Disco.dll
+D:\Projects\ML\SimpBot\Disco\bin\Debug\netcoreapp3.0\Disco.pdb
+D:\Projects\ML\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.csprojAssemblyReference.cache
+D:\Projects\ML\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfoInputs.cache
+D:\Projects\ML\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.AssemblyInfo.cs
+D:\Projects\ML\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.csproj.CoreCompileInputs.cache
+D:\Projects\ML\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.dll
+D:\Projects\ML\SimpBot\Disco\obj\Debug\netcoreapp3.0\Disco.pdb
