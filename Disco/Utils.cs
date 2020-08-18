@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -9,6 +10,8 @@ namespace Disco
 {
     public class Utils
     {
+        private static HttpClient client;
+
         /// <summary>
         /// Log a <see cref="string"/> for debug purposes.
         /// </summary>
@@ -18,6 +21,13 @@ namespace Disco
             var stackFrame = new StackTrace().GetFrame(1);
             var callingMethod = stackFrame.GetMethod();
             Console.WriteLine($"[{callingMethod.Name}] {logStr}");
+        }
+
+        public static HttpClient GetHttpClient()
+        {
+            if (client == null)
+                client = new HttpClient();
+            return client;
         }
 
         /// <summary>

@@ -17,6 +17,7 @@
         public string TenorToken { get; set; }
         public int GifDistanceThreshold { get; set; }
         public bool AutoRespond { get; set; }
+        public string WebhookUrl { get; set; }
     }
 
     public class ConfigBucket : DataStructure<Configuration, ConfigBucket>
@@ -40,5 +41,6 @@
         public static string tenorToken { get => Instance.Data.TenorToken; set => Instance.Data.TenorToken = value; }
         public static int gifDistanceThreshold { get => Instance.Data.GifDistanceThreshold; set => Instance.Data.GifDistanceThreshold = value; }
         public static bool autoRespond { get => Instance.Data.AutoRespond; set => Instance.Data.AutoRespond = value; }
+        public static string webhookUrl { get => Instance.Data.WebhookUrl; }
     }
 }

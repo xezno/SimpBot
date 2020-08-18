@@ -13,7 +13,6 @@ namespace SimpBot
 {
     public class Utils
     {
-        private static HttpClient client;
         private static Pipeline pipeline;
 
         public static string NumberToEmoji(int value)
@@ -57,21 +56,13 @@ namespace SimpBot
             return pipeline;
         }
 
-
-        public static HttpClient GetHttpClient()
-        {
-            if (client == null)
-                client = new HttpClient();
-            return client;
-        }
-
         /// <returns>Title, url</returns>
         public static RSG.Promise<(string, string)> GetGif(string searchQuery)
         {
             var promise = new RSG.Promise<(string, string)>();
             var requestLimit = 5;
             var queryUrl = $"https://api.tenor.com/v1/search?q={searchQuery}&key={ConfigBucket.tenorToken}&limit={requestLimit}";
-            var query = GetHttpClient().GetAsync(queryUrl).Result;
+            var query = Disco.Utils.GetHttpClient().GetAsync(queryUrl).Result;
             var result = query.Content.ReadAsStringAsync().Result;
             var queryObject = Newtonsoft.Json.JsonConvert.DeserializeObject<TenorRequest>(result);
 

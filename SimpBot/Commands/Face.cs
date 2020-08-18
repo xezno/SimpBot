@@ -58,7 +58,7 @@ namespace SimpBot.Commands
                 parameters.Append($"{parameterNames[i]}={commandArgs.Args[i]}");
             }
 
-            var response = Utils.GetHttpClient().GetAsync($"https://fakeface.rest/face/json{parameters}").Result;
+            var response = Disco.Utils.GetHttpClient().GetAsync($"https://fakeface.rest/face/json{parameters}").Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
 
             // Read as json

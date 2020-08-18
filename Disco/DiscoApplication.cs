@@ -1,232 +1,147 @@
-﻿using Discord;
-using Discord.WebSocket;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Timers;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Discord.Webhook;
 
 namespace Disco
 {
     public class DiscoApplication
     {
-        private static List<Command> commands = new List<Command>();
-        private bool isReady;
+        public DiscordWebhookClient Client { get; private set; }
 
-        public DiscordShardedClient Client { get; private set; }
+        private List<User> users = new List<User>();
+        private Random random = new Random();
+        private TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+        private List<string> messageLog = new List<string>() { "xezno:\nwhats up losers\n\n" };
 
         public async Task Run()
         {
-            Console.WriteLine("Starting bot...");
-            LoadCommands();
-            LoadComponents();
-
-            Client = new DiscordShardedClient();
-            Client.Log += Log;
-            Client.MessageReceived += MessageReceived;
-            Client.ShardReady += Ready;
-            Client.LoggedIn += LoggedIn;
-            Client.ReactionAdded += ReactionAdded;
-
-            await Client.LoginAsync(TokenType.Bot, ConfigBucket.botToken);
-            await Client.StartAsync();
-            await Client.SetGameAsync($"as {ConfigBucket.currentPersonality}", type: ActivityType.Playing);
+            Console.WriteLine("Starting webhook bot...");
+            Client = new DiscordWebhookClient(ConfigBucket.webhookUrl);
             Console.WriteLine("Finished initialization.");
+
+            GenerateUsers();
+            MainLoop();
+
             await Task.Delay(-1);
         }
 
-        private void LoadComponents()
+        private void GenerateUsers()
         {
-            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            for (int i = 0; i < 10; ++i)
             {
-                if (typeof(DataStructureBase).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract && t != typeof(DataStructure<,>))
-                {
-                    Utils.Log($"Loading component {t.Name}");
-                    if (t.BaseType != null)
-                    {
-                        ((DataStructureBase)(t.BaseType // Class -> DataStructureBase -> Singleton<Class>
-                            .GetMethod("Get")
-                            ?.Invoke(null, null)))
-                        ?.Load();
-                    }
-                    else
-                    {
-                        Utils.Log($"Couldn't load {t.Name} as base type was null");
-                    }
-                }
+                users.Add(GenerateUser());
             }
         }
 
-        private void LoadCommands()
+        private void MainLoop()
         {
-            Dictionary<string, List<Command>> aliases = new Dictionary<string, List<Command>>();
-            foreach (var t in Assembly.GetEntryAssembly().GetTypes().Where(t => !t.IsAbstract && t.BaseType == typeof(Command)))
+            while (true)
             {
-                var instance = (Command)Activator.CreateInstance(t);
-                commands.Add(instance);
-
-                foreach (var alias in instance.Aliases)
-                {
-                    if (aliases.ContainsKey(alias))
-                    {
-                        Utils.Log($"Alias collision detected for '{alias}':");
-                        aliases[alias].Add(instance);
-                        foreach (var command in aliases[alias])
-                        {
-                            Utils.Log($"\t{command.GetType().Name}");
-                        }
-                    }
-                    else
-                    {
-                        aliases.Add(alias, new List<Command>() { instance });
-                    }
-                }
-            }
-
-            Utils.Log($"{commands.Count} commands loaded");
-        }
-
-        private Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
-        {
-            ReactionHandler.Instance.TriggerReaction(reaction.User.Value, message.Id, reaction.Emote, this);
-            return Task.CompletedTask;
-        }
-
-        public Task Ready(DiscordSocketClient socketClient)
-        {
-            Utils.Log("Ready");
-            isReady = true;
-
-            foreach (var guild in socketClient.Guilds)
-            {
-                Console.WriteLine(guild.Name);
-                foreach (var channel in guild.Channels)
-                {
-                    Console.WriteLine($"\t{channel.Name}");
-                    //if (guild.Name == "SimsVille")
-                    //{
-                    //    try
-                    //    {
-                    //        (channel as SocketTextChannel)?.EnterTypingState();
-                    //    }
-                    //    catch { }
-                    //}
-                }
-            }
-            return Task.CompletedTask;
-        }
-        public Task LoggedIn()
-        {
-            Utils.Log("Logged In!");
-            return Task.CompletedTask;
-        }
-
-        public async Task MessageReceived(SocketMessage message)
-        {
-            if (!isReady)
-                return;
-
-            if (message.Author.IsBot)
-                return;
-
-            Console.WriteLine($"{message.Author.Username} in {message.Channel.Name}: {message.Content}");
-            try
-            {
-                await Client.SetGameAsync($"as {ConfigBucket.currentPersonality}", type: ActivityType.Playing);
-
-                if (message.Author.Id == Client.CurrentUser.Id)
-                    return;
-
-                var splitContent = message.Content.Split(' ');
-                bool commandRun = false;
-
-                // Check if it's actually a command
-                if (!splitContent[0].StartsWith(ConfigBucket.prefix, StringComparison.CurrentCultureIgnoreCase)) 
-                {
-                    // Respond mode
-                    if (!splitContent[0].StartsWith("!") && ConfigBucket.autoRespond)
-                        await RunCommand(message, "respond", commands.First(c => c.Aliases.Contains("respond")));
-                    return;
-                }
-
-                if (Utils.CheckBanned(message)) // User is banned - don't continue
-                    return;
-
-                string userCommand = splitContent[0].Remove(0, ConfigBucket.prefix.Length);
-                foreach (Command c in commands)
-                {
-                    commandRun = await RunCommand(message, userCommand, c);
-                    if (commandRun)
-                        break;
-                }
-
-                if (!commandRun)
-                {
-                    string closestCommand = null;
-                    int closestCommandRating = 3;
-                    foreach (Command c in commands)
-                    {
-                        foreach (string s in c.Aliases)
-                        {
-                            var levDist = Utils.LevenshteinDistance(s.ToLower(), userCommand.ToLower());
-                            if (levDist <= 2 && levDist < closestCommandRating)
-                            {
-                                closestCommand = s;
-                                closestCommandRating = levDist;
-                            }
-                        }
-                    }
-                    if (string.IsNullOrEmpty(closestCommand))
-                        Utils.SendError(message.Channel, $"Command not found.");
-                    else
-                        Utils.SendError(message.Channel, $"Command not found; did you mean `{ConfigBucket.prefix}{closestCommand}`?");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
+                var user = users[random.Next(0, users.Count)];
+                Client.SendMessageAsync(GenerateMessage(user), username: user.Name, avatarUrl: user.Avatar);
+                System.Threading.Thread.Sleep(500);
             }
         }
 
-        public Task Log(LogMessage msg)
+        private User GenerateUser()
         {
-            return Task.CompletedTask;
+            var gender = new Random().Next(0, 2) == 1 ? "male" : "female";
+            var basedOn = GenerateBasedOn();
+            var avatar = GenerateFace(gender);
+            var name = GenerateName(gender);
+
+            return new User()
+            {
+                Avatar = avatar,
+                BasedOn = basedOn,
+                Name = name
+            };
         }
 
-        private async Task<bool> RunCommand(SocketMessage message, string userCommand, Command c)
+        private string GenerateBasedOn()
         {
-            bool commandRun = false;
-            foreach (string s in c.Aliases)
+            var possibleUsers = new[]
             {
-                if (s.Equals(userCommand, StringComparison.CurrentCultureIgnoreCase))
+                "xezno",
+                "rip in peri peri",
+                "Alex🌮",
+                "Lazy Duchess",
+                "houseofmous",
+                "Hot",
+                "dotequals",
+                "The Architect"
+            };
+            return possibleUsers[random.Next(0, possibleUsers.Length)];
+        }
+
+        private string GenerateFace(string gender)
+        {
+            var response = Utils.GetHttpClient().GetAsync($"https://fakeface.rest/face/json?gender={gender}&minimum_age=20").Result;
+            var responseString = response.Content.ReadAsStringAsync().Result;
+            var deserializedResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
+            return deserializedResponse["image_url"];
+        }
+
+        private string GenerateName(string gender)
+        {
+            var firstNameFile = File.ReadAllLines($"Content/Names/{gender}.txt");
+            var firstName = firstNameFile[random.Next(0, firstNameFile.Length)];
+            
+            var lastNameFile = File.ReadAllLines("Content/Names/last_names.txt");
+            var lastName = lastNameFile[random.Next(0, lastNameFile.Length)];
+
+            return $"{textInfo.ToTitleCase(firstName)} {textInfo.ToTitleCase(lastName)}";
+        }
+
+        private string GenerateMessage(User user)
+        {
+            var prefix = string.Join("", messageLog.TakeLast(ConfigBucket.context));
+
+            Utils.Log(prefix);
+
+            var values = new Dictionary<string, string>
+            {
+                { "temperature", ConfigBucket.temperature.ToString() },
+                { "prefix", prefix },
+                { "include_prefix", "false" },
+                { "length", "50" },
+                { "top_p", ConfigBucket.topP.ToString() },
+                { "top_k", ConfigBucket.topK.ToString() }
+            };
+
+            var serializedValues = Newtonsoft.Json.JsonConvert.SerializeObject(values);
+
+            var content = new StringContent(serializedValues, System.Text.Encoding.UTF8, "application/json");
+            var response = Utils.GetHttpClient().PostAsync($"{ConfigBucket.apiEndpoint}/", content).Result;
+            var responseString = response.Content.ReadAsStringAsync().Result;
+
+            // Read as json
+            var deserializedResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
+            var text = deserializedResponse["text"];
+
+            // Replace \ns with new lines
+            text.Replace("\\n", "\n");
+
+            var splitMessages = text.Split('\n');
+            foreach (var userMessage in splitMessages)
+            {
+                if (!userMessage.EndsWith(":") && !string.IsNullOrWhiteSpace(userMessage) && userMessage.Length > 1)
                 {
-                    string[] args;
-                    if (message.Content.Contains(' '))
-                        args = message.Content.Remove(0, message.Content.IndexOf(' ') + 1).Split(' ');
-                    else
-                        args = new string[] { };
-
-                    if (args.Length < c.MinArgs)
-                    {
-                        Utils.SendError(message.Channel, "Not enough arguments.");
-                    }
-                    else if (args.Length > c.MaxArgs)
-                    {
-                        Utils.SendError(message.Channel, "Too many arguments.");
-                    }
-                    else
-                    {
-                        var thread = new Thread(() => c.Run(new CommandArgs(args, message, Client)));
-                        thread.Start();
-                    }
-
-                    commandRun = true;
-                    break;
+                    messageLog.Add(
+                        $"{user.BasedOn}:\n" +
+                        $"{userMessage}\n" +
+                        $"\n"
+                    );
+                    return userMessage;
                 }
             }
-            return commandRun;
+
+            return "No message??";
         }
     }
 }

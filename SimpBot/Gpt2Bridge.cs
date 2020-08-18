@@ -75,7 +75,7 @@ namespace SimpBot
             prefix = $"{args.Message.Author.Username}\n{prefix}";
 
             var content = new StringContent(serializedValues, System.Text.Encoding.UTF8, "application/json");
-            var request = Utils.GetHttpClient().PostAsync($"{ConfigBucket.apiEndpoint}/", content);
+            var request = Disco.Utils.GetHttpClient().PostAsync($"{ConfigBucket.apiEndpoint}/", content);
             if (request.IsCompletedSuccessfully)
             {
                 var response = request.Result;

@@ -40,7 +40,7 @@ namespace SimpBot.Commands
             // Disco.Utils.Log($"Prefix: {prefix}");
 
             var content = new StringContent(serializedValues, System.Text.Encoding.UTF8, "application/json");
-            var response = Utils.GetHttpClient().PostAsync($"{ConfigBucket.apiEndpoint}/", content).Result;
+            var response = Disco.Utils.GetHttpClient().PostAsync($"{ConfigBucket.apiEndpoint}/", content).Result;
             var responseString = response.Content.ReadAsStringAsync().Result;
 
             // Read as json
