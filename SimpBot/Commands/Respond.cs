@@ -18,9 +18,19 @@ namespace SimpBot.Commands
         public override int MinArgs => 0;
         public override int MaxArgs => int.MaxValue;
 
+        private DateTime lastMessageTime;
+
         // TODO: Move / merge with Gpt2Bridge
         public override void Run(CommandArgs args)
         {
+            if ((DateTime.Now - lastMessageTime).TotalSeconds < ConfigBucket.respondTimeLimit)
+            {
+                Disco.Utils.SendError(args.Message.Channel, $"Sorry! I can only respond every {ConfigBucket.respondTimeLimit}s. please wait a while before sending the next one. ({ConfigBucket.respondTimeLimit - (DateTime.Now - lastMessageTime).TotalSeconds}s remaining)");
+                return;
+            }
+
+            lastMessageTime = DateTime.Now;
+
             // Send random placeholder message
             var placeholderMessage = Utils.SendPlaceholderMessage(args.Message.Channel);
 
@@ -28,7 +38,6 @@ namespace SimpBot.Commands
             using var typingState = args.Message.Channel.EnterTypingState();
 
             Gpt2Bridge.GetResponseAsync(args).Then(text => {
-
                 // Select only the message we need
                 var splitMessages = text.Split('\n');
                 foreach (var userMessage in splitMessages)

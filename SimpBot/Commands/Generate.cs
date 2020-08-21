@@ -23,7 +23,7 @@ namespace SimpBot.Commands
 
             DateTime startTime = DateTime.Now;
             var prefix = string.Join(' ', args.Args);
-            prefix = $"{args.Message.Author.Username}:\n{prefix}\n";
+            prefix = $"{args.Message.Author.Username}:\n{prefix}";
 
             var values = new Dictionary<string, string>
             {

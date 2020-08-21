@@ -25,7 +25,7 @@ namespace SimpBot.Commands
                 if (t.Namespace == null)
                     continue;
 
-                if (t.Namespace.Equals("BattleCord_Net.Commands", StringComparison.CurrentCultureIgnoreCase))
+                if (t.Namespace.Equals("SimpBot.Commands", StringComparison.CurrentCultureIgnoreCase))
                 {
                     if (!t.IsAbstract && t.BaseType == typeof(Command))
                     {
